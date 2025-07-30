@@ -26,15 +26,15 @@ if "username" not in st.session_state:
     
 if st.session_state.authenticate:
     st.subheader(f" Add Todo({st.session_state.username})")
-    tudo_title=st.text_input("Enter Tudo Title:")
-    tudo_detail=st.text_area("Brief about Todo:")
+    todo_title=st.text_input("Enter Todo Title:")
+    todo_detail=st.text_area("Brief about Todo:")
     btn=st.button("click me")
 
     if btn:
-        if tudo_title=="" or tudo_detail=="":
+        if todo_title =="" or todo_detail=="":
             st.warning("Please fill up all fields")
         else:
-            csr.execute(f"insert into mytodo(tudo_added,tudo_title,tudo_desc) values('{st.session_state.username}','{tudo_title}','{tudo_detail}');")
+            csr.execute(f"insert into mytodos(todo_added,todo_title,todo_desc) values('{st.session_state.username}','{todo_title}','{todo_detail}');")
             conn.commit()
 
             st.success("Todo Added succesfully...")
@@ -43,26 +43,25 @@ if st.session_state.authenticate:
     col1,col2,col3,col4=st.columns(4)
 
     with col1:
-        st.write("Tudo_id")
+        st.write("Todo_id")
     with col2:
-        st.write("Tudo  Title")
+        st.write("Todo  Title")
     with col3:
         st.write("Description")
     with col4:
         st.write("Delete Todo")
 
-    tudo_id,title,desc,dlt=st.columns(4)
-    csr.execute(f"select  * from mytodo where tudo_added ='{st.session_state.username}';")
+    todo_id,title,desc,dlt=st.columns(4)
+    csr.execute(f"select  * from mytodos where todo_added ='{st.session_state.username}';")
     all_todo=csr.fetchall()
 
     for id,added,title,dec,done in all_todo:
-        tudo_id,tit,desc,dlt=st.columns(4)
-        with tudo_id:
+        todo_id,tit,desc,dlt=st.columns(4)
+        with todo_id:
             checked= st.checkbox(" Done ",key={id},value=bool(done))
 
             if checked != bool(done):
-                csr.execute(f"update mytodo set done = {checked} where 
-                            tudo_id= {id}")
+                csr.execute(f"update mytodos set todo_done = {checked} where todo_id= {id}")
                 conn.commit()
         with tit:
             st.write(f"{title}")
@@ -71,7 +70,7 @@ if st.session_state.authenticate:
         with dlt:
             x=st.button(" ⛔ Delete ", key=f"{id}")
             if x:
-                csr.execute(f"delete from mytodo where tudo_id={id}")
+                csr.execute(f"delete from mytodos where todo_id={id}")
                 conn.commit()
                 st.snow()
                 st.rerun()
